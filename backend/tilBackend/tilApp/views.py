@@ -2,50 +2,50 @@
 from django_filters.rest_framework import DjangoFilterBackend
 import django_filters.rest_framework
 
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, permissions
 from .serializers import *
 from .models import *
 from django.contrib.auth.models import User
-
+#celery
+from .tasks import correo
 #uso de gmail
 import smtplib
 import email
 import ssl
 
-#prueba
-#REST_FRAMEWORK = {
-#    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
-#}
+
 
 class CrearPaciente(generics.ListCreateAPIView):
 
-    def get_queryset(self):
-        queryset = Paciente.objects.all()
-        nombre = self.request.query_params.get('nombre', None)
-        if nombre is not None:
-             queryset = queryset.filter(nombre=nombre)
-        print("\n\n\n",queryset)
-        #gmail
-        port = 587
-        smtp_server = "smtp-mail.outlook.com"
-        user = 'luis_bernardo_24@outlook.com'
-        password = "bbkNOQ65"
-        subject= "funciona?"
-        message = """\
-        Subject: oe
-
-        Respondame por el celular si le llego."""
-        conn = smtplib.SMTP(smtp_server,587)
-        conn.ehlo()
-        conn.starttls()
-        conn.login(user,password)
-        #for x in range(0,10):
-        conn.sendmail(user,'jpgiraldor@eafit.edu.co',message)
-        conn.quit
-        return queryset
+    #este metodo solo se planea usar si se planea enviar los correos
+    #desde aqui, por ahora seran enviados por el task
+    # def get_queryset(self):
+    #     queryset = Paciente.objects.all()
+    #     nombre = self.request.query_params.get('nombre', None)
+    #     if nombre is not None:
+    #          queryset = queryset.filter(nombre=nombre)
+    #     print("\n\n\n",queryset)
+    #     #gmail
+    #     port = 587
+    #     smtp_server = "smtp-mail.outlook.com"
+    #     user = 'luis_bernardo_24@outlook.com'
+    #     password = "bbkNOQ65"
+    #     subject= "funciona?"
+    #     message = """\
+    #     Subject: oe
+    #
+    #     Respondame por el celular si le llego."""
+    #     conn = smtplib.SMTP(smtp_server,587)
+    #     conn.ehlo()
+    #     conn.starttls()
+    #     conn.login(user,password)
+    #     #for x in range(0,10):
+    #     conn.sendmail(user,'lbzuluagag@eafit.edu.co',message)
+    #     conn.quit
+    #     return queryset
 
 
     queryset = Paciente.objects.all()
